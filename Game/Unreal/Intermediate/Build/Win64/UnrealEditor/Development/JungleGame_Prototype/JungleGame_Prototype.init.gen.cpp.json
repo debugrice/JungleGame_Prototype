@@ -1,0 +1,13 @@
+{
+    "Version": "1.1",
+    "Data": {
+        "Source": "c:\\users\\christopher rice\\documents\\unreal projects\\junglegame_prototype\\intermediate\\build\\win64\\unrealeditor\\inc\\junglegame_prototype\\junglegame_prototype.init.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\christopher rice\\documents\\unreal projects\\junglegame_prototype\\intermediate\\build\\win64\\junglegame_prototypeeditor\\development\\engine\\sharedpch.engine.shadowerrors.h.pch",
+        "Includes": [
+            "c:\\users\\christopher rice\\documents\\unreal projects\\junglegame_prototype\\intermediate\\build\\win64\\unrealeditor\\development\\junglegame_prototype\\definitions.junglegame_prototype.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

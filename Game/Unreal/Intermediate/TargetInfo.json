@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "JungleGame_Prototype",
+			"Path": "C:\\Users\\Christopher RIce\\Documents\\Unreal Projects\\JungleGame_Prototype\\Game\\Unreal\\Source\\JungleGame_Prototype.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "JungleGame_PrototypeEditor",
+			"Path": "C:\\Users\\Christopher RIce\\Documents\\Unreal Projects\\JungleGame_Prototype\\Game\\Unreal\\Source\\JungleGame_PrototypeEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
