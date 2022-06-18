@@ -116,6 +116,7 @@ void AMyProjectCharacter::LookUpAtRate(float Rate)
 
 void AMyProjectCharacter::MoveForward(float Value)
 {
+
 	if ((Controller != nullptr) && (Value != 0.0f))
 	{
 		// find out which way is forward
@@ -161,18 +162,33 @@ bool AMyProjectCharacter::bIsWallFront()
 	//FRotator Rotation = GetOwner()->GetActorRotation();
 	//GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(Location, Rotation)
 
-	FVector LineTraceStart = 1*(GetOwner()->GetTargetLocation());
-	FVector LineTraceEnd = LineTraceStart + (GetOwner()->GetActorForwardVector()*10);
+	FVector Location;
+	FRotator Rotation;
+	UE_LOG(LogTemp, Warning, TEXT("The start point value is: %s"), *Location.ToString());
+
+	// Allows access to the GetController Method
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn == nullptr) return true;
+	AController* OwnerController = OwnerPawn->GetController();
+	if (OwnerController == nullptr) return true;
+
+	// Outputs the location and rotation coordinates of the players viewpoint
+	OwnerController->GetPlayerViewPoint(Location, Rotation);
+	UE_LOG(LogTemp, Warning, TEXT("The start point value is: %s"), *Location.ToString());
+
+
+	FVector DetectLimit = Location + Rotation.Vector() * SenseRange;
+	UE_LOG(LogTemp, Warning, TEXT("The end point value is: %s"), *Location.ToString());
 	FHitResult Hit;
 
 	DrawDebugLine(
 		GetWorld(),
-		LineTraceStart,
-		LineTraceEnd,
+		Location,
+		DetectLimit,
 		FColor::Red,
-		false,
+		true,
 		10.0f,
-		0,
+		0.0f,
 		10.0f);
 
 		
