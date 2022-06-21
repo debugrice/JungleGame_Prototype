@@ -4,6 +4,10 @@
 #include "ParkourComponent.h"
 #include "Engine/World.h"
 #include "DrawDebugHelpers.h"
+#include "GameFramework/WorldSettings.h"
+#include "Engine/World.h"
+
+
 
 // Sets default values for this component's properties
 UParkourComponent::UParkourComponent()
@@ -20,9 +24,8 @@ UParkourComponent::UParkourComponent()
 void UParkourComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	// ...
-	
+
 }
 
 
@@ -32,30 +35,93 @@ void UParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	UE_LOG(LogTemp, Warning, TEXT("Test TickFunction"));
 	wallBehaviorDetermine();
-	
+
+
 
 
 }
 
 bool UParkourComponent::bIsWallBeside()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Test bIsWallBeside"));
+	FVector PlayerLocation = (GetOwner()->GetActorLocation());
+	FRotator PlayerRotationLeft = (GetOwner()->GetActorRotation());
+	FRotator PlayerRotationRight = (GetOwner()->GetActorRotation());
+	PlayerRotationLeft.Yaw -= 45;
+	PlayerRotationRight.Yaw += 45;
+
+	UE_LOG(LogTemp, Warning, TEXT("Test PlayerRotationLeft: %s"), *PlayerRotationLeft.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Test PlayerRotationRight: %s"), *PlayerRotationRight.ToString());
+
+	FVector StartLocation = PlayerLocation + PlayerRotationLeft.Vector() * 1;
+	FVector leftWallDetectLimit = StartLocation + PlayerRotationLeft.Vector() * 100;
+	FVector rightWallDetectLimit = StartLocation + PlayerRotationRight.Vector() * 100;
+
+	UE_LOG(LogTemp, Warning, TEXT("Test Start Location: %s"), *StartLocation.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Test bIsWallBeside Left: %s"), *leftWallDetectLimit.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Test bIsWallBeside Right: %s"), *rightWallDetectLimit.ToString());
+
+	// LeftDrawDebug
+	DrawDebugLine(
+		GetWorld(),
+		PlayerLocation,
+		leftWallDetectLimit,
+		FColor::Red,
+		true,
+		10.0f,
+		0.0f,
+		10.0f);
+
+	DrawDebugLine(
+		GetWorld(),
+		PlayerLocation,
+		rightWallDetectLimit,
+		FColor::Red,
+		true,
+		10.0f,
+		0.0f,
+		10.0f);
+
 	return true;
 }
 
 bool UParkourComponent::bIsWallFront()
 {
-	return true;
+	UE_LOG(LogTemp, Warning, TEXT("Test bIsWallFront"));
+	FVector PlayerLocation = (GetOwner()->GetActorLocation());
+	FVector fWallDetectLimit = PlayerLocation + GetOwner()->GetActorForwardVector() * 100;
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner());
+
+
+	DrawDebugLine(
+		GetWorld(),
+		PlayerLocation,
+		fWallDetectLimit,
+		FColor::Red,
+		true,
+		10.0f,
+		0.0f,
+		10.0f);
+
+	//GetWorld()->LineTraceSingleByChannel(Hit,PlayerLocation,fWallDetectLimit,ECollisionChannel::ECC_GameTraceChannel1, Params);
+	//UE_LOG(LogTemp, Warning, TEXT("Hit Result: %s"), *Hit.ToString());
+
+
+
+	return (GetWorld()->LineTraceSingleByChannel(Hit, PlayerLocation, fWallDetectLimit, ECollisionChannel::ECC_GameTraceChannel1, Params));
 }
 
 bool UParkourComponent::bIsLedgeFront()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Test IsLedgeFront"));
 
-	FVector Location = (GetOwner()->GetActorLocation());
-	Location.Z += 200;
-	UE_LOG(LogTemp, Warning, TEXT("The start point value is: %s"), *Location.ToString());
+	FVector PlayerLocation = (GetOwner()->GetActorLocation());
+	PlayerLocation.Z += 200;
+	UE_LOG(LogTemp, Warning, TEXT("The start point value is: %s"), *PlayerLocation.ToString());
 
-	FVector DetectLimit = Location + GetOwner()->GetActorForwardVector() * 100;
+	FVector DetectLimit = PlayerLocation + GetOwner()->GetActorForwardVector() * 100;
 	FVector LedgeDetect = DetectLimit;
 	LedgeDetect.Z -= 100;
 	UE_LOG(LogTemp, Warning, TEXT("The DetectLimit value is: %s"), *DetectLimit.ToString());
@@ -71,10 +137,28 @@ bool UParkourComponent::bIsLedgeFront()
 		0.0f,
 		10.0f);
 
+	return true;
+
 }
 
 bool UParkourComponent::bIsGroundBelow()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Test bIsGroundBelow"));
+	FVector PlayerLocation = (GetOwner()->GetActorLocation());
+
+	FVector GroundBelowDetectLimit = PlayerLocation;
+	GroundBelowDetectLimit.Z -= 85;
+
+	DrawDebugLine(
+		GetWorld(),
+		PlayerLocation,
+		GroundBelowDetectLimit,
+		FColor::Red,
+		true,
+		10.0f,
+		0.0f,
+		10.0f);
+
 	return true;
 
 }
@@ -97,13 +181,20 @@ void UParkourComponent::wallrun()
 }
 void UParkourComponent::slide()
 {
+	//APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	//ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+
 
 }
 
 void UParkourComponent::wallBehaviorDetermine()
 {
 
-	UE_LOG(LogTemp, Warning, TEXT("Test WallBehaviorDetermine function"));
-	bIsWallFront();
+	//UE_LOG(LogTemp, Warning, TEXT("Test WallBehaviorDetermine function"));
+	//APawn* OwnerPawn = Cast<APawn>(GetOwner());
 
+	bIsWallFront(); // Check
+	bIsLedgeFront(); // Check
+	bIsGroundBelow(); // Check
+	bIsWallBeside(); // Check
 }

@@ -8,7 +8,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class MYPROJECT_API UParkourComponent : public UActorComponent
+class MYPROJECT2_API UParkourComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -20,7 +20,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -41,4 +41,6 @@ public:
 private:
 	UPROPERTY(EditAnywhere)
 		float SenseRange = 1.5f;
+
+		
 };
