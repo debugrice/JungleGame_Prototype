@@ -6,6 +6,12 @@
 #include "DrawDebugHelpers.h"
 #include "GameFramework/WorldSettings.h"
 #include "Engine/World.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "MyProject2Character.h"
+#include "Components/PrimitiveComponent.h"
+
+
 
 
 
@@ -24,6 +30,8 @@ UParkourComponent::UParkourComponent()
 void UParkourComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	ownerProjectCharacter = Cast<AMyProject2Character>(GetOwner());
+
 	// ...
 
 }
@@ -33,14 +41,92 @@ void UParkourComponent::BeginPlay()
 void UParkourComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	UE_LOG(LogTemp, Warning, TEXT("Test TickFunction"));
-	wallBehaviorDetermine();
+	//UE_LOG(LogTemp, Warning, TEXT("Test TickFunction"));	
+	
+	if (bIsCharacterInJumpState())
+	{
+		wallBehaviorDetermine();
+	}
 
+	//UE_LOG(LogTemp, Warning, TEXT("IsJumping is: %s"), (bIsJumping ? TEXT("true") : TEXT("false")));
+
+}
+
+bool UParkourComponent::bIsCharacterInJumpState()
+{
+	// UE_LOG(LogTemp, Warning, TEXT("Test bIsCharacterInJumpState"));
+
+	
+	if (ownerProjectCharacter && ownerProjectCharacter->GetVelocity().Z > 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 
 
 
 }
 
+
+void UParkourComponent::wallBehaviorDetermine()
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Test WallBehaviorDetermine function"));
+	//APawn* OwnerPawn = Cast<APawn>(GetOwner());
+
+	if (bIsWallFront())
+	{
+		climb();
+	}
+	
+
+	//if (bIsLedgeFront())
+	//{
+	//	// Short Ledge Climb 
+	//}
+
+	//if (bIsGroundBelow())
+	//{
+	//	// Climb Down
+	//}
+
+	//if (bIsWallBeside())
+	//{
+	//	// Wall Run
+	//}
+}
+
+bool UParkourComponent::bIsWallFront()
+{
+	// UE_LOG(LogTemp, Warning, TEXT("Test bIsWallFront"));
+	FVector PlayerLocation = (GetOwner()->GetActorLocation());
+	FVector fWallDetectLimit = PlayerLocation + GetOwner()->GetActorForwardVector() * 100;
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(GetOwner());
+
+
+	//DrawDebugLine(
+	//	GetWorld(),
+	//	PlayerLocation,
+	//	fWallDetectLimit,
+	//	FColor::Red,
+	//	true,
+	//	10.0f,
+	//	0.0f,
+	//	10.0f);
+
+	
+
+	//GetWorld()->LineTraceSingleByChannel(Hit,PlayerLocation,fWallDetectLimit,ECollisionChannel::ECC_GameTraceChannel1, Params);
+	//UE_LOG(LogTemp, Warning, TEXT("Hit Result: %s"), *Hit.ToString());
+
+
+
+	return (GetWorld()->LineTraceSingleByChannel(Hit, PlayerLocation, fWallDetectLimit, ECollisionChannel::ECC_GameTraceChannel1, Params));
+}
 bool UParkourComponent::bIsWallBeside()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Test bIsWallBeside"));
@@ -85,33 +171,6 @@ bool UParkourComponent::bIsWallBeside()
 	return true;
 }
 
-bool UParkourComponent::bIsWallFront()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Test bIsWallFront"));
-	FVector PlayerLocation = (GetOwner()->GetActorLocation());
-	FVector fWallDetectLimit = PlayerLocation + GetOwner()->GetActorForwardVector() * 100;
-	FHitResult Hit;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(GetOwner());
-
-
-	DrawDebugLine(
-		GetWorld(),
-		PlayerLocation,
-		fWallDetectLimit,
-		FColor::Red,
-		true,
-		10.0f,
-		0.0f,
-		10.0f);
-
-	//GetWorld()->LineTraceSingleByChannel(Hit,PlayerLocation,fWallDetectLimit,ECollisionChannel::ECC_GameTraceChannel1, Params);
-	//UE_LOG(LogTemp, Warning, TEXT("Hit Result: %s"), *Hit.ToString());
-
-
-
-	return (GetWorld()->LineTraceSingleByChannel(Hit, PlayerLocation, fWallDetectLimit, ECollisionChannel::ECC_GameTraceChannel1, Params));
-}
 
 bool UParkourComponent::bIsLedgeFront()
 {
@@ -165,6 +224,16 @@ bool UParkourComponent::bIsGroundBelow()
 
 void UParkourComponent::climb()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Test climb"));
+	
+	FVector PlayerLocation = (GetOwner()->GetActorLocation());
+	FHitResult Hit;
+
+
+	ownerProjectCharacter->GetCharacterMovement()->AddImpulse(PlayerLocation + 200);
+
+	
+	
 
 }
 void UParkourComponent::climbUp()
@@ -184,17 +253,5 @@ void UParkourComponent::slide()
 	//APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	//ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
 
-
-}
-
-void UParkourComponent::wallBehaviorDetermine()
-{
-
-	//UE_LOG(LogTemp, Warning, TEXT("Test WallBehaviorDetermine function"));
-	//APawn* OwnerPawn = Cast<APawn>(GetOwner());
-
-	bIsWallFront(); // Check
-	bIsLedgeFront(); // Check
-	bIsGroundBelow(); // Check
-	bIsWallBeside(); // Check
+	
 }

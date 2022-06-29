@@ -29,6 +29,7 @@ public:
 	bool bIsWallFront();
 	bool bIsLedgeFront();
 	bool bIsGroundBelow();
+	bool bIsCharacterInJumpState();
 
 	void climb();
 	void climbUp();
@@ -41,6 +42,8 @@ public:
 private:
 	UPROPERTY(EditAnywhere)
 		float SenseRange = 1.5f;
+
+	class AMyProject2Character* ownerProjectCharacter = nullptr;
 
 		
 };
